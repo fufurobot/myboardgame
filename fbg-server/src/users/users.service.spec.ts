@@ -29,7 +29,8 @@ describe('UsersService', () => {
     const nickname = 'foo';
     const id = await service.newUser({ nickname });
     const user = await service.getById(id);
-    expect(user).toEqual({ id, nickname });
+    expect(user).toMatchObject({ id, nickname });
+    expect(user.role).toEqual('user');
   });
 
   it('should throw error for short nickname', async () => {
@@ -56,11 +57,14 @@ describe('UsersService', () => {
   });
 
   it('should update nickname correctly', async () => {
-    const oldNickname = 'foo';
+    // Nicknames now identify an account for login and are unique, so this
+    // must not reuse the nickname created by an earlier test.
+    const oldNickname = 'baz';
     const id = await service.newUser({ nickname: oldNickname });
     const nickname = 'bar';
     await service.updateUser(id, { nickname });
     const user = await service.getById(id);
-    expect(user).toEqual({ id, nickname });
+    expect(user).toMatchObject({ id, nickname });
+    expect(user.role).toEqual('user');
   });
 });
